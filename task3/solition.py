@@ -1,14 +1,57 @@
 def appearance(intervals: dict[str, list[int]]) -> int:
-    sum_time = 0
-    sum_time += calculate_time(intervals["pupil"])
-    sum_time += calculate_time(intervals["tutor"])
+    pupil_time = clear_list(intervals["pupil"])
+    tutor_time = clear_list(intervals["tutor"])
+    lesson_time = clear_list(intervals["lesson"])
+    return calculate_time(pupil_time, tutor_time, lesson_time)
 
-    return sum_time
 
-def calculate_time(times: list[int]) -> int:
+def clear_list(input_list: list[int]) -> list[int]:
+    if len(input_list) == 2:
+        return input_list
+
+    new_list = input_list.copy()
+    index = 1
+    while index < len(new_list) - 1:
+        if new_list[index] >= new_list[index+1]:
+            new_list.pop(index+1)
+            if new_list[index+1] < new_list[index]:
+                new_list.pop(index+1)
+            else:
+                new_list.pop(index)
+        else:
+            index += 2
+
+    return new_list
+
+
+def calculate_time(pupil_time: list[int], tutor_time: list[int], lesson_time: list[int]) -> int:
     accumulate = 0
-    for index in range(1, len(times), 2):
-        accumulate += times[index] - times[index - 1]
+
+    pupil_index = 0
+    tutor_index = 0
+    while pupil_index < len(pupil_time) and tutor_index < len(tutor_time):
+        start_time = pupil_time[pupil_index]
+        if pupil_time[pupil_index] < tutor_time[tutor_index]:
+            start_time = tutor_time[tutor_index]
+        if start_time < lesson_time[0]:
+            start_time = lesson_time[0]
+
+        end_time = pupil_time[pupil_index+1]
+        if tutor_time[tutor_index+1] < pupil_time[pupil_index+1]:
+            end_time = tutor_time[tutor_index+1]
+        if lesson_time[-1] < end_time:
+            end_time = lesson_time[-1]
+
+        if tutor_time[tutor_index+1] < pupil_time[pupil_index+1]:
+            tutor_index += 2
+        else:
+            pupil_index += 2
+
+        if end_time - start_time < 0:
+            continue
+
+        accumulate += end_time - start_time
+
     return accumulate
 
 
