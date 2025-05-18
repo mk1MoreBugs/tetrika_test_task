@@ -18,6 +18,11 @@ class StrictDecoratorTest(unittest.TestCase):
             test_sum_two(1, 2.0)
 
 
+    def test_invalid_float_kwarg_type(self):
+        with self.assertRaises(TypeError):
+            test_sum_two(1, b=2.0)
+
+
     def test_invalid_str_arg_type(self):
         with self.assertRaises(TypeError):
             test_sum_two('1', 2)
